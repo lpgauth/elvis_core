@@ -66,6 +66,7 @@ rock_this(Path, Config) ->
                         Filter = elvis_config:filter(Cfg),
                         Dirs = elvis_config:dirs(Cfg),
                         IgnoreList = elvis_config:ignore(Cfg),
+                        io:format("ignorelist: ~p~n", [IgnoreList]),
                         [] =/= elvis_file:filter_files([File], Dirs, Filter,
                                                        IgnoreList)
                 end,
@@ -140,18 +141,18 @@ apply_rule({Module, Function}, {Result, Config, File}) ->
     apply_rule({Module, Function, #{}}, {Result, Config, File});
 apply_rule({Module, Function, ConfigArgs}, {Result, Config, File}) ->
     ConfigMap = ensure_config_map(Module, Function, ConfigArgs),
-    RuleResult = try
+    % RuleResult = try
                     Results = Module:Function(Config, File, ConfigMap),
                     SortFun = fun(#{line_num := L1}, #{line_num := L2}) ->
                                   L1 =< L2
                               end,
                     SortResults = lists:sort(SortFun, Results),
-                    elvis_result:new(rule, Function, SortResults)
-                 catch
-                     _:Reason ->
-                         Msg = "'~p' while applying rule '~p'.",
-                         elvis_result:new(error, Msg, [Reason, Function])
-                 end,
+                    RuleResult = elvis_result:new(rule, Function, SortResults),
+                 % catch
+                 %     _:Reason ->
+                 %         Msg = "'~p' while applying rule '~p'.",
+                 %         elvis_result:new(error, Msg, [Reason, Function])
+                 % end,
     {[RuleResult | Result], Config, File}.
 
 

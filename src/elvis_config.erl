@@ -115,10 +115,14 @@ dirs(#{}) ->
 
 -spec ignore(config()) -> [string()].
 ignore(Config) when is_list(Config) ->
+    io:format("debug1~n", []),
     lists:flatmap(fun ignore/1, Config);
 ignore(_RuleGroup = #{ignore := Ignore}) ->
+    io:format("debug2~n", []),
+
     lists:map(fun ignore_to_regexp/1, Ignore);
 ignore(#{}) ->
+    io:format("debug3~n", []),
     [].
 
 -spec filter(config()) -> [string()].
